@@ -1,0 +1,16 @@
+name: 'AsanaBot'
+description: 'A bot to do all Asana related tasks'
+inputs:
+  asana-pat:
+    description: 'The Asana Personal Access Token'
+    required: true
+    default: ''
+  comment-text:
+    description: 'The comment to post when PR is either merged, close or opened'
+    default: ''
+    required: false
+  target:
+    description: 'Target sections to move the tasks to'
+    required: true
+
+  
