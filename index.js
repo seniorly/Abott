@@ -1,20 +1,36 @@
-const git = require('./src/lib/git');
 const github = require('@actions/github');
 const core = require('@actions/core');
+
 const utils = require('./src/utils/utils');
+const git = require('./src/lib/git');
 
 const run = async () => {
   utils.validateTrigger(github.context.eventName);
 
   const pullRequest = github.context.payload.pull_request;
-  const action = github.context.action;
-  const reviewEvent = github.context.eventName;
+  let prState = '';
   const target = core.getInput('target');
   const asanaPAT = core.getInput('asana-pat');
   const githubToken = core.getInput('GITHUB_TOKEN');
   const asanaSecret = core.getInput('ASANA_SECRET');
 
-  await git(asanaPAT, asanaSecret, reviewEvent, pullRequest, target, action);
+  const client = github.getOctokit(githubToken);
+  const reviews =  await client.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    pull_number: github.context.payload.pull_request.number,
+  });
+
+  console.log(JSON.stringify(reviews));
+
+  if (reviews.length === 0) {
+    prState = 'OPENED';
+  } else {
+    const state = reviews[reviews.length - 1].state;
+    prState = state;
+  }
+
+  await git(asanaPAT, asanaSecret, pullRequest, target, prState);
 }
 
 try {

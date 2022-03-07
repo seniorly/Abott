@@ -1,6 +1,6 @@
 const asana = require('asana');
 
-const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle) => {
+const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, commentStatus) => {
   const client = asana.Client.create().useAccessToken(asanaPat);
 
   const task = await client.tasks.findById(taskID);
@@ -17,18 +17,20 @@ const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle) => {
       out.push(`Moved ${task.name} to ${targetSection.name} in ${proj.name}`);
     }
 
-    let comment;
-    if (prState === 'approved') {
-      comment = {
-        text: `✅ PR Merged\n-------------------\n${ prTitle }\n-------------------\nView: ${ prUrl }\n👉 Merged by: `
-      };
-    } else if (prState === 'opened') {
-      comment = {
-        text: `PR opened\n--------\n${prTitle}\n------------\nView: ${prUrl}`
-      };
+    if (commentStatus) {
+      let comment;
+      if (prState === 'approved') {
+        comment = {
+          text: `✅ PR Merged\n-------------------\n${ prTitle }\n-------------------\nView: ${ prUrl }\n👉 Merged by: `
+        };
+      } else if (prState === 'opened') {
+        comment = {
+          text: `PR opened\n--------\n${prTitle}\n------------\nView: ${prUrl}`
+        };
+      }
+  
+      await client.tasks.addComment(task, comment);
     }
-
-    await client.tasks.addComment(task, comment);
   }
 
   if (!foundFlag) {

@@ -2,36 +2,55 @@ const core = require('@actions/core');
 const bot = require('./asana');
 const axios = require('axios');
 
-const gitEvent = async (asanaPAT, asanaSecret, event, pr, target, action) => {
+const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
   const ASANA_TASK_LINK_REGEX = /https:\/\/app.asana.com\/(\d+)\/(?<project>\d+)\/(?<taskId>\d+).*?/ig;
   if (pr != null) {
     core.info('Handling PR event...');
     const prUrl = pr.html_url;
-    const prIsMerged = pr.merged;
+    // const prIsMerged = pr.merged;
     const prBody = pr.body;
     const prNumber = pr.number;
     const prTitle = pr.title;
 
-    if (asanaSecret !== '') {
-      const axiosInstance = axios.create({
-        baseURL: 'https://github.integrations.asana.plus/custom/v1',
-        headers: {
-          Authorization: `Bearer ${asanaSecret}`,        }
-      });
+    let taskIDs = null;
+    let rawParseUrl;
+    let res;
+    while ((rawParseUrl = ASANA_TASK_LINK_REGEX.exec(prBody)) !== null) {
+      taskIDs.push(rawParseUrl.groups.taskId);
+    }
 
-      const result = await axiosInstance.post('actions/widget', {
-        allowedProjects: [],
-        blockedProjects: [],
-        pullRequestDescription: prBody,
-        pullRequestName: prTitle,
-        pullRequestNumber: prNumber,
-        pullRequestURL: prUrl, 
-      });
+    console.log(taskIDs);
 
-      console.log(result.data);
-      core.info(result.status);
-    } else {
-      const res = await bot(asanaPAT, target, )
+    for (const taskID of taskIDs) {
+      let commentStatus = true;
+      if (asanaSecret !== '') {
+        // This happens only when the PR is created. Otherwise we don't need to link the issue
+        if (prState === 'OPENED') {
+          const axiosInstance = axios.create({
+            baseURL: 'https://github.integrations.asana.plus/custom/v1',
+            headers: {
+              Authorization: `Bearer ${asanaSecret}`,        }
+          });
+    
+          const result = await axiosInstance.post('actions/widget', {
+            allowedProjects: [],
+            blockedProjects: [],
+            pullRequestDescription: prBody,
+            pullRequestName: prTitle,
+            pullRequestNumber: prNumber,
+            pullRequestURL: prUrl, 
+          });
+    
+          console.log(result.data);
+          core.info(result.status);
+        }
+        commentStatus = false;
+      } else {
+        commentStatus = true;
+      }
+
+      res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, commentStatus);
+      core.info(res);
     }
   }
 };
