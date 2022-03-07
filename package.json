@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha lib/ --timeout 10000"
   },
   "repository": {
     "type": "git",
@@ -28,11 +28,14 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "asana": "^0.18.6"
+    "asana": "^0.18.6",
+    "axios": "^0.26.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.33.3",
+    "chai": "^4.3.6",
     "eslint": "^8.10.0",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "mocha": "^9.2.1"
   }
 }

@@ -5,10 +5,14 @@ inputs:
     description: 'The Asana Personal Access Token'
     required: true
     default: ''
-  comment-text:
-    description: 'The comment to post when PR is either merged, close or opened'
-    default: ''
+  ASANA_SECRET:
+    description: 'The Asana Integration Secret'
     required: false
+    default: ''
+  GITHUB_TOKEN:
+    description: 'The github secret token for accessing PR status etc..'
+    default: ''
+    required: true
   target:
     description: 'Target sections to move the tasks to'
     required: true
