@@ -23,10 +23,11 @@ const run = async () => {
 
   console.log(JSON.stringify(reviews));
 
-  if (reviews.length === 0) {
+  const prReviews = reviews.data;
+  if (prReviews.length === 0) {
     prState = 'OPENED';
   } else {
-    const state = reviews[reviews.length - 1].state;
+    const state = prReviews[prReviews.length - 1].state;
     prState = state;
   }
 

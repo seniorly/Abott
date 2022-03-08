@@ -8,14 +8,17 @@ Abott's purpose is to help users link Asana task with GitHub PR and move the tas
 
 **Required** The personal access token of your asana account.
 
-### ASANA_SECRET
+#### ASANA_SECRET
 
 **Optional** The asana integration secret. Required if you want to link the Github PR as a field in Asana task. Else comment will be added
 
-### GITHUB_TOKEN
+#### GITHUB_TOKEN
 
 **Required** The Github token. This is required to get access to the PR state.
 
 ### target
 
-**Required** The target json which handles which section the task should be moved to when the PR state of approved or opened is achieved.
+**Required** The target json which handles which section the task should be moved to when the PR state of approved or opened is achieved. 
+
+`'{"APPROVED": "Ready For QA", "OPENED": "Code Review"}'` 
+In this example: *APPROVED* and *OPENED* are the states of PR and *Ready for QA* and *Code Review* are the section names inside the project.
