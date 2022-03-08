@@ -12,7 +12,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
     const prNumber = pr.number;
     const prTitle = pr.title;
 
-    let taskIDs = null;
+    let taskIDs = [];
     let rawParseUrl;
     let res;
     while ((rawParseUrl = ASANA_TASK_LINK_REGEX.exec(prBody)) !== null) {

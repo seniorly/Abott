@@ -77039,7 +77039,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
     const prNumber = pr.number;
     const prTitle = pr.title;
 
-    let taskIDs = null;
+    let taskIDs = [];
     let rawParseUrl;
     let res;
     while ((rawParseUrl = ASANA_TASK_LINK_REGEX.exec(prBody)) !== null) {
@@ -77548,10 +77548,11 @@ const run = async () => {
 
   console.log(JSON.stringify(reviews));
 
-  if (reviews.length === 0) {
+  const prReviews = reviews.data;
+  if (prReviews.length === 0) {
     prState = 'OPENED';
   } else {
-    const state = reviews[reviews.length - 1].state;
+    const state = prReviews[prReviews.length - 1].state;
     prState = state;
   }
 
