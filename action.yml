@@ -17,5 +17,8 @@ inputs:
     description: 'Target sections to move the tasks to'
     default: '{"APPROVED": "Ready For QA", "OPENED": "Code Review"}'
     required: true
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
 
   
