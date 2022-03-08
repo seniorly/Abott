@@ -49,7 +49,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
         commentStatus = true;
       }
 
-      res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, commentStatus);
+      res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus);
       core.info(res);
     }
   }

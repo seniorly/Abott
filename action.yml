@@ -15,6 +15,7 @@ inputs:
     required: true
   target:
     description: 'Target sections to move the tasks to'
+    default: '{"APPROVED": "Ready For QA", "OPENED": "Code Review"}'
     required: true
 
   
