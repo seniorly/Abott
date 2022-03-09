@@ -17,20 +17,29 @@ const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNum
       out.push(`Moved ${task.name} to ${targetSection.name} in ${proj.name}`);
     }
 
-    if (prState === 'CHANGES_REQUESTED') {
-      let comment;
-      comment = {
-        text: `Changes request for PR #${prNumber}\n-> View: ${prUrl}`
-      };
+    if (prState === 'CLOSED') {
+      await client.tasks.addComment(taskID, {
+        text: `Closed Pull Request #${prNumber}.\n View: ${prUrl}`,
+      });
+    }
 
-      await client.tasks.addComment(taskID, comment);
+    if (prState === 'MERGED') {
+      await client.tasks.addComment(taskID, {
+        text: `Merged Pull Request #${prNumber}\n${prTitle}\nView: ${prUrl}`,
+      });
+    }
+
+    if (prState === 'CHANGES_REQUESTED') {
+      await client.tasks.addComment(taskID, {
+        text: `Changes request for PR #${prNumber}\n-> View: ${prUrl}`,
+      });
     }
 
     if (commentStatus) {
       let comment;
       if (prState === 'APPROVED') {
         comment = {
-          text: `✅ PR Merged\n-------------------\n${prTitle}\n-------------------\nView: ${prUrl}`
+          text: `✅ PR Approved\n-------------------\n${prTitle}\n-------------------\nView: ${prUrl}`
         };
       } else if (prState === 'OPENED') {
         comment = {

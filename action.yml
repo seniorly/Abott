@@ -15,7 +15,7 @@ inputs:
     required: true
   target:
     description: 'Target sections to move the tasks to'
-    default: '{"APPROVED": "Ready For QA", "OPENED": "Code Review"}'
+    default: '{"APPROVED": "Ready For QA", "OPEN": "Code Review", "CLOSED": "Ready for QA", "MERGED": "Live"}'
     required: true
 runs:
   using: 'node16'
