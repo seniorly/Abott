@@ -42,7 +42,6 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
             pullRequestURL: prUrl, 
           });
     
-          console.log(result.data);
           core.info(result.status);
         }
         commentStatus = false;
@@ -51,7 +50,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
       }
 
       res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus);
-      core.info(res);
+      core.setOutput(res);
     }
   }
 };

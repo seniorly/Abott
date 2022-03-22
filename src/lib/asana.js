@@ -15,40 +15,38 @@ const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNum
       foundFlag = true;
       await client.sections.addTask(targetSection.gid, { task: taskID });
       out.push(`Moved ${task.name} to ${targetSection.name} in ${proj.name}`);
+    } else {
+      out.push(`Unable to move ${task.name} to ${target[prState]} in ${proj.name} as section doesn't exist.`)
+    }
+  }
+
+  if (commentStatus) {
+    let comment;
+    if (prState === 'OPEN') {
+      comment = {
+        text: `🔓 PR opened\n--------\n${prTitle}\n------------\nView: ${prUrl}`
+      };
     }
 
-    if (prState === 'CLOSED') {
-      await client.tasks.addComment(taskID, {
-        text: `Closed Pull Request #${prNumber}.\n View: ${prUrl}`,
-      });
-    }
+    await client.tasks.addComment(taskID, comment);
+  }
 
-    if (prState === 'MERGED') {
-      await client.tasks.addComment(taskID, {
-        text: `Merged Pull Request #${prNumber}\n${prTitle}\nView: ${prUrl}`,
-      });
-    }
-
-    if (prState === 'CHANGES_REQUESTED') {
-      await client.tasks.addComment(taskID, {
-        text: `Changes request for PR #${prNumber}\n-> View: ${prUrl}`,
-      });
-    }
-
-    if (commentStatus) {
-      let comment;
-      if (prState === 'APPROVED') {
-        comment = {
-          text: `✅ PR Approved\n-------------------\n${prTitle}\n-------------------\nView: ${prUrl}`
-        };
-      } else if (prState === 'OPENED') {
-        comment = {
-          text: `PR opened\n--------\n${prTitle}\n------------\nView: ${prUrl}`
-        };
-      }
-  
-      await client.tasks.addComment(taskID, comment);
-    }
+  if (prState === 'CLOSED') {
+    await client.tasks.addComment(taskID, {
+      text: `🛑 Closed Pull Request #${prNumber}.\n View: ${prUrl}`,
+    });
+  } else if (prState === 'MERGED') {
+    await client.tasks.addComment(taskID, {
+      text: `Merged Pull Request #${prNumber}\n${prTitle}\nView: ${prUrl}`,
+    });
+  } else if (prState === 'CHANGES_REQUESTED') {
+    await client.tasks.addComment(taskID, {
+      text: `❌ Changes request for PR #${prNumber}\n-> View: ${prUrl}`,
+    });
+  } else if (prState === 'APPROVED') {
+    await client.tasks.addComment(taskID, {
+      text: `✅ PR Approved\n-------------------\n${prTitle}\n-------------------\nView: ${prUrl}`
+    });
   }
 
   if (!foundFlag) {

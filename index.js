@@ -21,8 +21,6 @@ const run = async () => {
     pull_number: github.context.payload.pull_request.number,
   });
 
-  console.log(JSON.stringify(reviews));
-
   const prReviews = reviews.data;
   if (prReviews.length === 0) {
     const statusPR = await client.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
@@ -32,7 +30,7 @@ const run = async () => {
     });
 
     const status = statusPR.data.state;
-    const mergedStatus = statusPR.data.mergeable;
+    const mergedStatus = statusPR.data.merged;
     if (mergedStatus)
       prState = "MERGED";
     else
@@ -41,6 +39,8 @@ const run = async () => {
     const state = prReviews[prReviews.length - 1].state;
     prState = state;
   }
+
+  core.info(prState);
   await git(asanaPAT, asanaSecret, pullRequest, target, prState);
 }
 
@@ -51,6 +51,7 @@ try {
   if (err instanceof Error) {
     core.setFailed(err.message);
   } else {
+    core.error(err);
     core.setFailed('Unknown error');
   }
 }

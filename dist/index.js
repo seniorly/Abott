@@ -76955,9 +76955,9 @@ function wrappy (fn, cb) {
 /***/ ((module) => {
 
 const triggers = [
-  "pull_request",
-  "pull_request_review",
-  "pull_request_review_comment",
+  'pull_request',
+  'pull_request_review',
+  'pull_request_review_comment',
 ];
 
 module.exports = triggers;
@@ -76984,31 +76984,38 @@ const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNum
       foundFlag = true;
       await client.sections.addTask(targetSection.gid, { task: taskID });
       out.push(`Moved ${task.name} to ${targetSection.name} in ${proj.name}`);
+    } else {
+      out.push(`Unable to move ${task.name} to ${target[prState]} in ${proj.name} as section doesn't exist.`)
     }
+  }
 
-    if (prState === 'CHANGES_REQUESTED') {
-      let comment;
+  if (commentStatus) {
+    let comment;
+    if (prState === 'OPEN') {
       comment = {
-        text: `Changes request for PR #${prNumber}\n-> View: ${prUrl}`
+        text: `🔓 PR opened\n--------\n${prTitle}\n------------\nView: ${prUrl}`
       };
-
-      await client.tasks.addComment(taskID, comment);
     }
 
-    if (commentStatus) {
-      let comment;
-      if (prState === 'APPROVED') {
-        comment = {
-          text: `✅ PR Merged\n-------------------\n${prTitle}\n-------------------\nView: ${prUrl}`
-        };
-      } else if (prState === 'OPENED') {
-        comment = {
-          text: `PR opened\n--------\n${prTitle}\n------------\nView: ${prUrl}`
-        };
-      }
-  
-      await client.tasks.addComment(taskID, comment);
-    }
+    await client.tasks.addComment(taskID, comment);
+  }
+
+  if (prState === 'CLOSED') {
+    await client.tasks.addComment(taskID, {
+      text: `🛑 Closed Pull Request #${prNumber}.\n View: ${prUrl}`,
+    });
+  } else if (prState === 'MERGED') {
+    await client.tasks.addComment(taskID, {
+      text: `Merged Pull Request #${prNumber}\n${prTitle}\nView: ${prUrl}`,
+    });
+  } else if (prState === 'CHANGES_REQUESTED') {
+    await client.tasks.addComment(taskID, {
+      text: `❌ Changes request for PR #${prNumber}\n-> View: ${prUrl}`,
+    });
+  } else if (prState === 'APPROVED') {
+    await client.tasks.addComment(taskID, {
+      text: `✅ PR Approved\n-------------------\n${prTitle}\n-------------------\nView: ${prUrl}`
+    });
   }
 
   if (!foundFlag) {
@@ -77040,25 +77047,26 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
     const prTitle = pr.title;
 
     let taskIDs = [];
-    let rawParseUrl;
+    let rawParseUrlTask;
     let res;
-    while ((rawParseUrl = ASANA_TASK_LINK_REGEX.exec(prBody)) !== null) {
-      taskIDs.push(rawParseUrl.groups.taskId);
+    while ((rawParseUrlTask = ASANA_TASK_LINK_REGEX.exec(prBody)) !== null) {
+      taskIDs.push(rawParseUrlTask.groups.taskId);
     }
 
-    console.log(taskIDs);
+    core.info(taskIDs);
 
     for (const taskID of taskIDs) {
       let commentStatus = true;
       if (asanaSecret !== '') {
         // This happens only when the PR is created. Otherwise we don't need to link the issue
-        if (prState === 'OPENED') {
+        if (prState === 'OPEN') {
           const axiosInstance = axios.create({
             baseURL: 'https://github.integrations.asana.plus/custom/v1',
             headers: {
-              Authorization: `Bearer ${asanaSecret}`,        }
+              Authorization: `Bearer ${asanaSecret}`,
+            }
           });
-    
+
           const result = await axiosInstance.post('actions/widget', {
             allowedProjects: [],
             blockedProjects: [],
@@ -77068,7 +77076,6 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
             pullRequestURL: prUrl, 
           });
     
-          console.log(result.data);
           core.info(result.status);
         }
         commentStatus = false;
@@ -77077,7 +77084,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
       }
 
       res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus);
-      core.info(res);
+      core.setOutput(res);
     }
   }
 };
@@ -77546,16 +77553,26 @@ const run = async () => {
     pull_number: github.context.payload.pull_request.number,
   });
 
-  console.log(JSON.stringify(reviews));
-
   const prReviews = reviews.data;
   if (prReviews.length === 0) {
-    prState = 'OPENED';
+    const statusPR = await client.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: github.context.payload.pull_request.number,
+    });
+
+    const status = statusPR.data.state;
+    const mergedStatus = statusPR.data.merged;
+    if (mergedStatus)
+      prState = "MERGED";
+    else
+      prState = status.toUpperCase();
   } else {
     const state = prReviews[prReviews.length - 1].state;
     prState = state;
   }
 
+  core.info(prState);
   await git(asanaPAT, asanaSecret, pullRequest, target, prState);
 }
 
@@ -77566,6 +77583,7 @@ try {
   if (err instanceof Error) {
     core.setFailed(err.message);
   } else {
+    core.error(err);
     core.setFailed('Unknown error');
   }
 }
