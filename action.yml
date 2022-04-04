@@ -1,4 +1,4 @@
-name: 'AsanaBot'
+name: 'Abott'
 description: 'A bot to do all Asana related tasks'
 inputs:
   asana_pat:
