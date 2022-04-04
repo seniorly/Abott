@@ -77542,9 +77542,9 @@ const run = async () => {
   const pullRequest = github.context.payload.pull_request;
   let prState = '';
   const target = core.getInput('target');
-  const asanaPAT = core.getInput('asana-pat');
-  const githubToken = core.getInput('GITHUB_TOKEN');
-  const asanaSecret = core.getInput('ASANA_SECRET');
+  const asanaPAT = core.getInput('asana_pat');
+  const githubToken = core.getInput('github_token');
+  const asanaSecret = core.getInput('asana_secret');
 
   const client = github.getOctokit(githubToken);
   const reviews =  await client.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {

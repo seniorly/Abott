@@ -1,15 +1,15 @@
 name: 'AsanaBot'
 description: 'A bot to do all Asana related tasks'
 inputs:
-  asana-pat:
+  asana_pat:
     description: 'The Asana Personal Access Token'
     required: true
     default: ''
-  ASANA_SECRET:
+  asana_secret:
     description: 'The Asana Integration Secret'
     required: false
     default: ''
-  GITHUB_TOKEN:
+  github_token:
     description: 'The github secret token for accessing PR status etc..'
     default: ''
     required: true

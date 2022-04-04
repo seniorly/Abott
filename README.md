@@ -21,19 +21,19 @@ jobs:
       - name: Link Asana task to PR
         uses: seniorly/Abott@v1
         with:
-          ASANA_SECRET: ${{ secrets.ASANA_SECRET }}
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          asana-pat: ${{ secrets.ASANA_PAT }}
+          asana_secret: ${{ secrets.ASANA_SECRET }}
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          asana_pat: ${{ secrets.ASANA_PAT }}
           target: '{"APPROVED": "Ready For QA", "OPEN": "Code Review", "CLOSED": "Ready For QA", "MERGED": "Approved"}'
 ```
 
 ## Inputs
 
-### `asana-pat`
+### `asana_pat`
 
 **Required** The personal access token of your asana account.
 
-#### `ASANA_SECRET`
+#### `asana_secret`
 
 **Optional** The asana integration secret. Required if you want to link the Github PR as a field in Asana task. Else comment will be added. To generate an Asana secret follow the below steps:
 
@@ -42,7 +42,7 @@ jobs:
   * Copy the generated secret. Do not share this secret with anyone!
 
 
-#### `GITHUB_TOKEN`
+#### `github_token`
 
 **Required** The Github token. This is required to get access to the PR state.
 
