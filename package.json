@@ -1,6 +1,6 @@
 {
-  "name": "asanabot",
-  "version": "0.0.1",
+  "name": "abott",
+  "version": "1.0.0",
   "description": "Asana Github Actions bot",
   "main": "dist/index.js",
   "scripts": {
@@ -10,21 +10,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hjoshi123/asanabot.git"
+    "url": "git+https://github.com/seniorly/abott.git"
   },
   "keywords": [
     "Asana",
     "Node.JS",
     "Github",
-    "Actions",
     "Actions"
   ],
-  "author": "Hemant Joshi",
+  "author": "Seniorly",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hjoshi123/asanabot/issues"
+    "url": "https://github.com/seniorly/abott/issues"
   },
-  "homepage": "https://github.com/hjoshi123/asanabot#readme",
+  "homepage": "https://github.com/seniorly/abott#readme",
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
