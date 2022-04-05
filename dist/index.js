@@ -77006,7 +77006,7 @@ const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNum
     });
   } else if (prState === 'MERGED') {
     await client.tasks.addComment(taskID, {
-      text: `Merged Pull Request #${prNumber}\n${prTitle}\nView: ${prUrl}`,
+      text: `🎉 Merged Pull Request #${prNumber}\n${prTitle}\nView: ${prUrl}`,
     });
   } else if (prState === 'CHANGES_REQUESTED') {
     await client.tasks.addComment(taskID, {
