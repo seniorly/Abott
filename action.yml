@@ -1,5 +1,9 @@
-name: 'Abott'
+name: 'Automate Asana'
 description: 'A bot to do all Asana related tasks'
+author: Seniorly
+branding:
+  icon: briefcase
+  color: gray-dark
 inputs:
   asana_pat:
     description: 'The Asana Personal Access Token'
