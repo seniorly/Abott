@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const bot = require('./asana');
 const axios = require('axios');
 
-const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
+const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState, doNotMoveSections) => {
   const ASANA_TASK_LINK_REGEX = /https:\/\/app.asana.com\/(\d+)\/(?<project>\d+)\/(?<taskId>\d+).*?/ig;
   if (pr != null) {
     core.info('Handling PR event...');
@@ -49,7 +49,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
         commentStatus = true;
       }
 
-      res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus);
+      res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus, doNotMoveSections);
       core.setOutput(res);
     }
   }

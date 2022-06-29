@@ -21,6 +21,10 @@ inputs:
     description: 'Target sections to move the tasks to'
     default: '{"APPROVED": "Ready For QA", "OPEN": "Code Review", "CLOSED": "Ready for QA", "MERGED": "Live"}'
     required: true
+  donot_move:
+    description: 'Tasks in this section won\'t be moved. Section Gid'
+    default: '["1202112437101028"]'
+    required: false
 runs:
   using: 'node16'
   main: 'dist/index.js'

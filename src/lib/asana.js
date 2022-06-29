@@ -1,7 +1,11 @@
 const asana = require('asana');
 
-const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus) => {
-  const client = asana.Client.create().useAccessToken(asanaPat);
+const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNumber,        commentStatus, doNotMoveSections) => {
+  const client = asana.Client.create({
+    'defaultHeaders': {
+      'asana-enable': 'new_user_task_lists',
+    },
+  }).useAccessToken(asanaPat);
 
   const task = await client.tasks.findById(taskID);
   const projects = task.projects;
@@ -10,6 +14,20 @@ const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNum
   let foundFlag = false;
   for (const proj of projects) {
     const sections = await client.sections.findByProject(proj.gid);
+
+    doNotMoveSections = JSON.parse(doNotMoveSections);
+    if (doNotMoveSections.length > 0) {
+      for (const members of task.memberships) {
+        if (members.project.gid === proj.gid) {
+          for (const doNotSec of doNotMoveSections) {
+            if (members.section.gid === doNotSec) {
+              continue
+            } 
+          }
+        }
+      }
+    }
+
     const targetSection = await sections.find((sec) => sec.name === target[prState]);
     if (targetSection) {
       foundFlag = true;

@@ -55,6 +55,13 @@ jobs:
 `{"APPROVED": "Ready For QA", "OPEN": "Code Review", "CLOSED": "Ready For QA", "MERGED": "Approved"}` 
 In this example: *APPROVED* and *OPENED* are the states of PR and *Ready for QA* and *Code Review* are the section names inside the project.
 
+### `donot_move`
+
+**Optional** Array of section gids which can be used to ignore sections from where tasks shouldn't be moved.
+
+`["1202112437101028"]`
+In this example, it is a gid of a section. Upon putting this, tasks from this section won't be moved.
+
 ## Output
 
 ### `res`

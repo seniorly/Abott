@@ -13,6 +13,7 @@ const run = async () => {
   const asanaPAT = core.getInput('asana_pat');
   const githubToken = core.getInput('github_token');
   const asanaSecret = core.getInput('asana_secret');
+  const doNotMoveSections = core.getInput('donot_move');
 
   const client = github.getOctokit(githubToken);
   const reviews =  await client.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
@@ -31,8 +32,9 @@ const run = async () => {
 
     const status = statusPR.data.state;
     const mergedStatus = statusPR.data.merged;
+    core.debug(`Merge status is: ${mergedStatus}`);
     if (mergedStatus)
-      prState = "MERGED";
+      prState = 'MERGED';
     else
       prState = status.toUpperCase();
   } else {
@@ -41,7 +43,7 @@ const run = async () => {
   }
 
   core.info(prState);
-  await git(asanaPAT, asanaSecret, pullRequest, target, prState);
+  await git(asanaPAT, asanaSecret, pullRequest, target, prState, doNotMoveSections);
 }
 
 try {
