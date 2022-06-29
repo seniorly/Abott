@@ -76969,8 +76969,12 @@ module.exports = triggers;
 
 const asana = __nccwpck_require__(3565);
 
-const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus) => {
-  const client = asana.Client.create().useAccessToken(asanaPat);
+const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNumber,        commentStatus, doNotMoveSections) => {
+  const client = asana.Client.create({
+    'defaultHeaders': {
+      'asana-enable': 'new_user_task_lists',
+    },
+  }).useAccessToken(asanaPat);
 
   const task = await client.tasks.findById(taskID);
   const projects = task.projects;
@@ -76979,6 +76983,20 @@ const asanaBot = async (asanaPat, taskID, target, prState, prUrl, prTitle, prNum
   let foundFlag = false;
   for (const proj of projects) {
     const sections = await client.sections.findByProject(proj.gid);
+
+    doNotMoveSections = JSON.parse(doNotMoveSections);
+    if (doNotMoveSections.length > 0) {
+      for (const members of task.memberships) {
+        if (members.project.gid === proj.gid) {
+          for (const doNotSec of doNotMoveSections) {
+            if (members.section.gid === doNotSec) {
+              continue
+            } 
+          }
+        }
+      }
+    }
+
     const targetSection = await sections.find((sec) => sec.name === target[prState]);
     if (targetSection) {
       foundFlag = true;
@@ -77036,7 +77054,7 @@ const core = __nccwpck_require__(2186);
 const bot = __nccwpck_require__(8093);
 const axios = __nccwpck_require__(6545);
 
-const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
+const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState, doNotMoveSections) => {
   const ASANA_TASK_LINK_REGEX = /https:\/\/app.asana.com\/(\d+)\/(?<project>\d+)\/(?<taskId>\d+).*?/ig;
   if (pr != null) {
     core.info('Handling PR event...');
@@ -77083,7 +77101,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState) => {
         commentStatus = true;
       }
 
-      res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus);
+      res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus, doNotMoveSections);
       core.setOutput(res);
     }
   }
@@ -77545,6 +77563,7 @@ const run = async () => {
   const asanaPAT = core.getInput('asana_pat');
   const githubToken = core.getInput('github_token');
   const asanaSecret = core.getInput('asana_secret');
+  const doNotMoveSections = core.getInput('donot_move');
 
   const client = github.getOctokit(githubToken);
   const reviews =  await client.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
@@ -77563,8 +77582,9 @@ const run = async () => {
 
     const status = statusPR.data.state;
     const mergedStatus = statusPR.data.merged;
+    core.debug(`Merge status is: ${mergedStatus}`);
     if (mergedStatus)
-      prState = "MERGED";
+      prState = 'MERGED';
     else
       prState = status.toUpperCase();
   } else {
@@ -77573,7 +77593,7 @@ const run = async () => {
   }
 
   core.info(prState);
-  await git(asanaPAT, asanaSecret, pullRequest, target, prState);
+  await git(asanaPAT, asanaSecret, pullRequest, target, prState, doNotMoveSections);
 }
 
 try {
