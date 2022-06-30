@@ -25,6 +25,9 @@ inputs:
     description: 'Tasks in this section won\'t be moved. Section Gid'
     default: '["1202112437101028"]'
     required: false
+jobs:
+  my_first_job:
+    name: My first job
 runs:
   using: 'node16'
   main: 'dist/index.js'
