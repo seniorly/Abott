@@ -77066,7 +77066,7 @@ const bot = __nccwpck_require__(8093);
 const axios = __nccwpck_require__(6545);
 
 const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState, doNotMoveSections) => {
-  const ASANA_TASK_LINK_REGEX = /https:\/\/app.asana.com\/(\d+)\/(?<project>\d+)\/(?<taskId>\d+).*?/ig;
+  const ASANA_TASK_LINK_REGEX = /https:\/\/app.asana.com\/(\d+)\/(?<project>\d+)\/(?<taskId>\d+).*/ig;
   if (pr != null) {
     core.info('Handling PR event...');
     const prUrl = pr.html_url;
@@ -77078,6 +77078,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState, doNotMoveSec
     let taskIDs = [];
     let rawParseUrlTask;
     let res;
+    core.debug(prBody);
     while ((rawParseUrlTask = ASANA_TASK_LINK_REGEX.exec(prBody)) !== null) {
       taskIDs.push(rawParseUrlTask.groups.taskId);
     }

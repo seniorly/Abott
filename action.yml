@@ -22,7 +22,7 @@ inputs:
     default: '{"APPROVED": "Ready For QA", "OPEN": "Code Review", "CLOSED": "Ready for QA", "MERGED": "Live"}'
     required: true
   donot_move:
-    description: 'Tasks in this section won\'t be moved. Section Gid'
+    description: "Tasks in this section won't be moved. Section Gid"
     default: '["1202112437101028"]'
     required: false
 jobs:
