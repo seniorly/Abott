@@ -39,7 +39,12 @@ const run = async () => {
       prState = status.toUpperCase();
   } else {
     const state = prReviews[prReviews.length - 1].state;
-    prState = state;
+    const mergedStatus = prReviews[prReviews.length - 1].merged;
+    core.debug(`Merge status is: ${mergedStatus}`);
+    if (mergedStatus)
+      prState = 'MERGED';
+    else
+      prState = state.toUpperCase();
   }
 
   core.info(prState);
