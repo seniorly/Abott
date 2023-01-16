@@ -77114,7 +77114,7 @@ const gitEvent = async (asanaPAT, asanaSecret, pr, target, prState, doNotMoveSec
       }
 
       res = await bot(asanaPAT, taskID, target, prState, prUrl, prTitle, prNumber, commentStatus, doNotMoveSections);
-      core.setOutput(res);
+      core.setOutput('res', res);
     }
   }
 };
