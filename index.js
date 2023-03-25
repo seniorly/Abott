@@ -7,6 +7,7 @@ const git = require('./src/lib/git');
 const run = async () => {
   utils.validateTrigger(github.context.eventName);
 
+  const action = github.context.payload.action;
   const pullRequest = github.context.payload.pull_request;
   let prState = '';
   const target = core.getInput('target');
@@ -23,12 +24,12 @@ const run = async () => {
   });
 
   const prReviews = reviews.data;
-  if (pullRequest.merged) {
+  if (action === 'closed' && pullRequest.merged) {
     prState = 'MERGED';
   } else if (prReviews.length > 0) {
     prState = prReviews[prReviews.length - 1].state.toUpperCase();
   } else {
-    prState = state.toUpperCase();
+    prState = pullRequest.state.toUpperCase();
   }
 
   core.info(prState);
