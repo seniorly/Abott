@@ -1,6 +1,6 @@
 {
   "name": "abott",
-  "version": "1.1.9",
+  "version": "1.1.11",
   "description": "Asana Github Actions bot",
   "main": "dist/index.js",
   "scripts": {
